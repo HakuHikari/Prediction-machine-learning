@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Disease Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #2a2a2a; /* Gelap, abu-abu tua */
+            color: #fff; /* Teks putih */
+        }
+        
+        .container {
+            background: #333; /* Abu-abu gelap */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        
+        h1 {
+            color: #ecf0f1; /* Putih terang */
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ecf0f1; /* Putih terang */
+            font-weight: bold;
+        }
+        
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #bdc3c7; /* Abu-abu muda */
+            border-radius: 4px;
+            background-color: #444; /* Abu-abu lebih gelap */
+            color: #ecf0f1; /* Putih terang */
+            font-size: 14px;
+        }
+        
+        .predict-button {
+            background-color: #fff; /* Putih */
+            color: #2c3e50; /* Abu gelap */
+            padding: 12px 20px;
+            border: 1px solid #bdc3c7; /* Border abu-abu terang */
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease; /* Efek transisi saat hover */
+        }
+        
+        .predict-button:hover {
+            background-color: #f1f1f1; /* Putih lebih terang saat hover */
+            color: #34495e; /* Abu gelap lebih kuat saat hover */
+            border-color: #34495e; /* Border lebih gelap saat hover */
+        }        
+        
+        .results {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #333; /* Abu-abu gelap */
+            border-radius: 4px;
+            position: relative;
+        }
+        
+        .prediction {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #444; /* Abu-abu lebih gelap */
+            border-left: 4px solid #4e8cff; /* Garis biru untuk aksen */
+        }
+        
+        .probability {
+            color: #4e8cff; /* Biru terang */
+            font-weight: bold;
+        }
+        
+        .code {
+            color: #7f8c8d; /* Abu-abu lebih muda */
+            font-size: 0.9em;
+        }        
+    </style>
+    <script>
+        function resetForm() {
+            for (let i = 1; i <= 5; i++) {
+                document.getElementById('symptom' + i).selectedIndex = 0;
+            }
+            document.querySelector('.results').style.display = 'none';
+            document.getElementById('predictionForm').reset();
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Disease Prediction</h1>
+        <form id="predictionForm" method="POST">
+            {% for i in range(1, 6) %}
+            <div class="form-group">
+                <label for="symptom{{i}}">Symptom {{i}}:</label>
+                <select name="symptom{{i}}" id="symptom{{i}}" required>
+                    <option value="">Select a symptom</option>
+                    {% for symptom in symptoms %}
+                    <option value="{{symptom}}" {% if selected_values['symptom' + i|string] == symptom %}selected{% endif %}>
+                        {{symptom}}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            {% endfor %}
+            <button type="submit" class="predict-button">Predict Disease</button>
+        </form>
+        {% if prediction_results %}
+        <div class="results">
+            <h2>Top 3 Predicted Diseases:</h2>
+            {% for pred in prediction_results %}
+            <div class="prediction">
+                <div>Disease: {{pred.disease}} <span class="code">[{{pred.code}}]</span></div>
+                <div class="probability">Probability: {{pred.probability|round(2)}}%</div>
+            </div>
+            {% endfor %}
+            <button type="button" class="reset-button" onclick="resetForm()">Reset</button>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
